@@ -6,6 +6,7 @@
 # All rights reserved.
 
 # The artwork is copyright CC BY-NC-ND 3.0 by Ludivine Lechat.
+# The audio is copyright CC BY-NC-ND 3.0 by Lieven Menschaert.
 
 # Reference:
 # De Smedt T., Menschaert L. (in press 2013). VALENCE: Affective visualisation using EEG. Digital Creativity.
