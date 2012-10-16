@@ -28,6 +28,7 @@ from nodebox.gui               import Field, Button, Rows, Panel
 from math    import sin, cos, radians
 from random  import seed
 from headset import Headset
+from udp     import UDP
 
 try:
     ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -36,6 +37,9 @@ except:
     
 def abspath(*path):
     return os.path.join(ROOT, *path)
+    
+def clamp(value, x=0, y=100):
+    return min(max(x, value), y)
 
 ######################################################################################################
 
@@ -53,13 +57,13 @@ def _callback_save_settings(button):
          headset = Headset()
          print e
 
-settings = Panel("Headset IP", x=30, y=30, modal=False)
+settings = Panel("Headset IP", x=30, y=30, modal=False, color=(0.5,0.4,0.6,1))
 settings.append(
     Rows(
         controls=[
             ("host", Field(id="host", value="128.0.0.1")),
             ("port", Field(id="port", value="12001")),
-            Button("Connect", action=_callback_save_settings)
+            Button("Connect", action=_callback_save_settings, color=(0.5,0.4,0.6,1))
         ]
     )
 )
@@ -374,17 +378,21 @@ class Attractor(Particle):
 
 def setup(canvas):
     global headset
+    global dimmer
     global images
     global samples
     global particles
     global attractor
-    global ZOOM, ATTRACT, SPAWN, delay; delay=0
+    global ZOOM, ATTRACT, SPAWN, DIM, delay; delay=0
     global BLOB; BLOB=Image(abspath("g","blob.png")) # See Attractor.draw_halo().
     global MUTE
 
     # ----------------------------------------------------
     #headset = Headset(host="169.254.132.243", port=12002)
     headset = Headset()
+    # ----------------------------------------------------
+    #dimmer = None
+    dimmer = UDP("10.0.1.2", 7000)
     # ----------------------------------------------------
     
     # Blurred images:
@@ -421,23 +429,28 @@ def setup(canvas):
     
     # Spacebar toggles between ignore/receive input.
     MUTE = False
+    
+    # Value that drops to zero when relaxed.
+    DIM = 1.0
 
 # Load stuff before opening window.
 setup(canvas)
 
 def draw(canvas):
     global headset
+    global dimmer
     global images
     global samples
     global particles
     global attractor
-    global ZOOM, ATTRACT, SPAWN, delay
+    global ZOOM, ATTRACT, SPAWN, DIM, delay
     global MUTE
     
     glEnable(GL_DITHER)
     
     background(0)
-    image(abspath("g","bg.png"), 0, 0, width=canvas.width, height=canvas.height)
+    #image(abspath("g","bg.png"), 0, 0, width=canvas.width, height=canvas.height)
+    image(abspath("g","bg-light.png"), 0, 0, width=canvas.width, height=canvas.height, alpha=0.9)
     
     if canvas.key.code == SPACE:
         MUTE = not MUTE
@@ -467,6 +480,16 @@ def draw(canvas):
     if MUTE:
         ATTRACT = SPAWN = False
         delay = 0
+    
+    # Dimmer sends a value over UDP that drops to 0 when relaxed.
+    # It can be used to dim ambient lighting using a domotica module.
+    m = 0.0025
+    if ATTRACT:
+        DIM = clamp(DIM-m, 0.0, 1.0)
+    else:
+        DIM = clamp(DIM+m, 0.0, 1.0)
+    if DIM < 0.8 and dimmer is not None:
+        dimmer.send("%.2f" % (DIM * 100))
     
     # Valence controls the balance between high and low ambient.
     v = headset.valence.slope # -1.0 => +1.0
@@ -571,7 +594,7 @@ def stop(canvas):
 
 canvas.name = "Valence"
 canvas.size = 1000, 600
-canvas.fullscreen = True
+#canvas.fullscreen = True
 #canvas.mouse.cursor = HIDDEN
 canvas.draw = draw
 canvas.stop = stop
