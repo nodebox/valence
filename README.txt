@@ -1,3 +1,10 @@
+VALENCE: AFFECTIVE VISUALIZATION USING EEG
+==========================================
+
+
+INSTALLATION
+------------
+
 1) Install Python: 
    - http://www.python.org/getit/releases/2.7/ 
    - Choose the 32-bit installer.
@@ -14,15 +21,64 @@
      /Library/Python/2.7/site-packages/ (Mac)
      C:\python27\Lib\site-packages\ (Windows)
 
-The application is called "attractor.py". 
-On Windows, you can run it by double-clicking the file,
-or using the Command Prompt with:
-"c:\Python27\python.exe c:\valence\attractor.py"
+SETUP
+-----
 
-On Mac, you can run it by using "python attractor.py" in the Terminal.
+The application is called "attractor.py". On Windows, you can run it by double-clicking the file, or using the Command Prompt with: "c:\Python27\python.exe c:\valence\attractor.py". On Mac, you can run it by executing "python attractor.py" in the Terminal.
 
-Once the application is running, press SHIFT to simulate alpha-waves. Press CTRL to simulate valence. Press SPACEBAR to mute live EEG input.
+SIMULATION
+----------
 
-To establish a live connection with the headset, modify line 380 in the source code with the correct IP-address. Put the following line in comment (#). You can also use the dialog window when the application is running to establish a connection.
+For testing, once the application is running press SHIFT to simulate alpha waves. Press CTRL to simulate valence. Press SPACEBAR to mute live EEG input. An indicator in the lower left corner will indicate when the EEG reading exceeds the long-term average for alpha ("relaxation") and valence ("arousal"). A recording indicator in the lower right corner will indicate that the application is receiving data from the headset controller application. When SPACE is pressed, "ready" will flash in the lower left corner.
 
-At the bottom of the script (line 565+) are a few settings for screen size.
+LIVE CONNECTION
+---------------
+
+To establish a live connection with the headset, modify the source code of attractor.py with the correct IP-address for Headset(). This is the IP-address of the receiving computer (running attractor.py). Use the same IP-address in the headset controller application that sends out the EEG data. In wakeful relaxation with eyes closed, the cells will subsequently attract.
+
+The source code has a UDP() object that sends out a DIM value increasing from 0.0 to 1.0 when relaxed (decreasing if no longer relaxed). This value can be sent to a home automation module to control ambient lighting, for example. Provide the IP-address of the receiving home automation server.
+
+CALIBRATION
+-----------
+
+To get useful EEG biofeedback, the headset needs to be calibrated first. 
+In the headset controller application:
+
+1) Acquire COM port. 
+   Provide the number of the COM port to which the IR is connected.
+2) Calibration. 
+   Check the channels panel for a clear sine wave on all channels.
+   This will take a second or two.
+3) Measurement. 
+   Check the channels panel and wait until all alpha signals all flat.
+   This will take as long as the LTA defined for alpha.
+4) Send to network. 
+   Send out the EEG data to attractor.py (check channels, alpha LTA and valence LTA). 
+   It is a good idea to pause the animation beforehand with SPACE to avoid noise.
+
+A good setting for alpha LTA (long-term average) is 15 seconds. This means that the cells will burst apart after 15 seconds, since the LTA becomes equal to the current alpha reading at this time. Before that, a good rule of thumb is to close eyes and count to 10. The audio provides an indicator that the cells are attracting. Open eyes to observe the cells bursting apart.
+
+Note: moving your head or talking will garble the EEG readings. Clenching your teeth is a good method for testing if signals are received correctly.
+
+REFERENCE
+---------
+
+De Smedt, T., Menschaert, L. (in press 2013). VALENCE: Affective visualisation using EEG. Digital Creativity.
+
+AUTHORS
+-------
+
+tom@organisms.be
+lievenmenschaert@gmail.com
+
+LICENSE
+-------
+
+GPL
+
+COPYRIGHT
+---------
+
+© 2012 Imec (Interuniversity Microelectronics Centre), Leuven (BE).
+© 2012 Experimental Media Research Group (EMRG), St. Lucas University College of Art and Design, Antwerp (BE).
+© 2012 Computational Linguistics Group (CLiPS), University of Antwerp (BE).
