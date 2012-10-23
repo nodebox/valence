@@ -60,6 +60,34 @@ A good setting for alpha LTA (long-term average) is 15 seconds. This means that 
 
 Note: moving your head or talking will garble the EEG readings. Clenching your teeth is a good method for testing if signals are received correctly.
 
+LOXONE DIMMER MODULE
+---------------------
+
+The Valence setup for Interieur 2012 has an extra option that enables the system to communicate with a Loxone domotics module. This module acts as a miniserver that can handle signals to be used as a dimmer for lights.
+
+Make shure to connect to this wireless network:
+
+1. The windows XP computer running the EEG software.
+2. The mac computer running the Valence application.
+--> point to Valence Loxone net: pw = loxon
+
+The Loxone module is configured  so that it receives signals from the mac - IP: 192.168.2.3 
+Check the mac IP first to make shure that it still has this IP address.
+
+If not:
+
+Run the Loxone config software on the windows 7 computer:
+- Open it and select the 'Miniserver' tab.
+- 'Search' (the button is on the upper left corner) for the module: it should show the Loxone miniserver AND a dimmer module which is connected to it.
+- 'Connect' (button is next to 'Search' button) to it. It's current IP is 192.168.2.2 / administrator: admin /  pw: admin
+- Click the miniserver tab again and click the 'Load from Miniserver' tab.
+- You should see a small modular network with two nodes: Relaxation connected to Dimmer AQ1.
+- Click on the test-UPD (left column) and make shure the Sender address is the same as the mac running Valence.
+- If the IP has changed on the Mac: change the IP of the sender address and 'Save in Miniserver'.
+
+Try dimming the lights by running Valence and press the shift key. The intensity of the lights should go up.
+
+
 REFERENCE
 ---------
 
